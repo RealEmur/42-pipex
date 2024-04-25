@@ -1,6 +1,17 @@
-files = main.c functions/ft_split.c functions/ft_strlen.c functions/ft_strjoin.c functions/ft_strncmp.c 
+NAME = pipex
+FILES = pipex.c ./functions/ft_split.c ./functions/ft_strlen.c functions/ft_strjoin.c functions/ft_strncmp.c 
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 
-all:
-	$(CC) $(CFLAGS) $(files) 
+all: $(NAME)
+
+$(NAME):
+	$(CC) $(CFLAGS) $(FILES) -o $(NAME)
+
+clean:
+	$(RM)
+
+fclean: clean 
+	$(RM) $(NAME)
+
+re: fclean all 

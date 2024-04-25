@@ -1,1 +1,8 @@
-       2
+Makefile
+README.md
+functions
+input
+output
+pipex
+pipex.c
+pipex.h
