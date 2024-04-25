@@ -34,7 +34,7 @@ char *get_path(char *command, char **env)
 	return path;
 }
 
-char *execute_command(char *command, char **env, int *p)
+char *execute_command(char *command, char **env, int *p, int count, int fd)
 {
 	char	**command_splitted;
 	char 	*path;
@@ -46,9 +46,25 @@ char *execute_command(char *command, char **env, int *p)
 	pid = fork();
 	if(pid)
 	{
-		dup2(p[0], 0);
-		dup2(p[1], 1);
+		if(count == 0)
+		{
+			close(p[0]);
+			dup2(fd, STDIN_FILENO);
+			dup2(p[1], STDOUT_FILENO);
+		}
+		else if(count == 1)
+		{
+			close(p[1]);
+			dup2(fd, STDOUT_FILENO);
+			dup2(p[0], STDIN_FILENO);
+		}
+		else
+		{
+			dup2(p[0], STDIN_FILENO);
+			dup2(p[1], STDOUT_FILENO);
+		}
 		execve(path, command_splitted, env);
+		exit(1);
 	}
 	else
 		waitpid(pid, 0, 0);
@@ -71,14 +87,12 @@ int main(int size, char **args, char **env)
 		return 0;
 	input_file = open(args[1], O_RDWR);
 	output_file = open(args[4], O_RDWR);
-	if(!input_file || !output_file) 
+	if(input_file == -1|| output_file == -1) 
 		printf("HATA");
-	dup2(input_file, p[0]);
-	dup2(output_file, p[1]);
 	if(size == 5)
 	{
-		execute_command(args[2], env, p);
-		execute_command(args[3], env, p);
+		execute_command(args[2], env, p, 0, input_file);
+		execute_command(args[3], env, p, 1, output_file);
 	}
 	else
 		printf("Usage: ./a.out <input_file> command command <outputfile>\n");
