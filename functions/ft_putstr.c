@@ -1,29 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/25 23:35:18 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/26 02:29:46 by emyildir         ###   ########.fr       */
+/*   Created: 2024/04/26 02:20:57 by emyildir          #+#    #+#             */
+/*   Updated: 2024/04/26 02:33:04 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "../pipex.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <sys/wait.h>
-# include <fcntl.h>
+void	ft_putstr(char *str)
+{
+	size_t	i;
 
-char	*ft_strjoin(const char *str1, const char *str2);
-char	**ft_split(char const *s, char c);
-int		ft_strlen(const char *str);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-void	ft_putstr(char *str);
-void	send_error(char *str);
-
-#endif
+	i = 0;
+	while (str[i])
+		write(1, str + i++, 1);
+}
