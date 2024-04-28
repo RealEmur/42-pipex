@@ -6,17 +6,11 @@
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 23:30:27 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/26 02:40:54 by emyildir         ###   ########.fr       */
+/*   Updated: 2024/04/28 08:49:56 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-void	swap_str_and_free(char **str, char *new_str)
-{
-	free(*str);
-	*str = new_str;
-}
 
 char	*get_path(char *command, char **env)
 {
@@ -59,7 +53,7 @@ void	free_matrix(char **arr)
 	free(arr);
 }
 
-void	execute_command(char *command, char **env, int *p, int index, int fd)
+void	first_process(char *command, char **env, int *p, int fd)
 {
 	char	**command_splitted;
 	char	*path;
@@ -68,16 +62,39 @@ void	execute_command(char *command, char **env, int *p, int index, int fd)
 	command_splitted = ft_split(command, ' ');
 	path = get_path(command_splitted[0], env);
 	if (!path)
-		send_error("Command not found.\n");
+		path = ft_strjoin("", command);
 	pid = fork();
 	if (pid)
 	{
-		close(p[index]);
-		dup2(fd, index);
-		dup2(p[!index], !index);
+		close(p[0]);
+		dup2(fd, STDIN_FILENO);
+		dup2(p[1], STDOUT_FILENO);
 		if (execve(path, command_splitted, env) == -1)
-			send_error("An error occured while running the command.\n");
-		exit(1);
+			exit(1);
+	}
+	waitpid(pid, 0, 0);
+	free_matrix(command_splitted);
+	free(path);
+}
+
+void	second_process(char *command, char **env, int *p, int fd)
+{
+	char	**command_splitted;
+	char	*path;
+	pid_t	pid;
+
+	command_splitted = ft_split(command, ' ');
+	path = get_path(command_splitted[0], env);
+	if (!path)
+		path = ft_strjoin("", command);
+	pid = fork();
+	if (pid)
+	{
+		close(p[1]);
+		dup2(fd, STDOUT_FILENO);
+		dup2(p[0], STDIN_FILENO);
+		if (execve(path, command_splitted, env) == -1)
+			exit(EXIT_FAILURE);
 	}
 	waitpid(pid, 0, 0);
 	free_matrix(command_splitted);
@@ -95,13 +112,13 @@ int	main(int size, char **args, char **env)
 		"Usage: ./pipex <input file> <command1> <command2> <output file>\n");
 	if (pipe(p) < 0)
 		send_error("An error occured\n");
-	input_file = open(args[1], O_RDWR);
+	input_file = open(args[1], O_RDONLY);
 	if (input_file == -1)
-		send_error("Input file could not found\n");
+		send_error("");
 	output_file = open(args[4], O_RDWR);
 	if (output_file == -1)
-		send_error("Output file could not found.\n");
-	execute_command(args[2], env, p, 0, input_file);
-	execute_command(args[3], env, p, 1, output_file);
-	return (0);
+		send_error("");
+	first_process(args[2], env, p, input_file);
+	second_process(args[3], env, p, output_file);
+	return (EXIT_SUCCESS);
 }

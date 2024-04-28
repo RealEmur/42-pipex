@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   send_error.c                                       :+:      :+:    :+:   */
+/*   swap_str_and_free.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/26 02:24:00 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/28 01:52:52 by emyildir         ###   ########.fr       */
+/*   Created: 2024/04/28 08:41:16 by emyildir          #+#    #+#             */
+/*   Updated: 2024/04/28 08:43:32 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../pipex.h"
 
-void	send_error(char *str)
+void	swap_str_and_free(char **str, char *new_str)
 {
-	ft_putstr(str);
-	exit(EXIT_FAILURE);
+	free(*str);
+	*str = new_str;
 }
