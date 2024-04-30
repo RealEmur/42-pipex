@@ -9,7 +9,7 @@ $(NAME):
 	$(CC) $(CFLAGS) $(FILES) -o $(NAME)
 
 clean:
-	$(RM)
+	echo "Maksat boş kalmasın"
 
 fclean: clean 
 	$(RM) $(NAME)
