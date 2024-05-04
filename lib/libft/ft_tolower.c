@@ -1,25 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   ft_tolower.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/25 23:29:57 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/25 23:46:24 by emyildir         ###   ########.fr       */
+/*   Created: 2023/12/04 20:13:18 by emyildir          #+#    #+#             */
+/*   Updated: 2023/12/04 20:15:01 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../pipex.h"
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+int	ft_tolower(int c)
 {
-	size_t	i;
-
-	i = 0;
-	while (s1[i] && s1[i] == s2[i] && i < n)
-		i++;
-	if (i == n)
-		return (0);
-	return ((unsigned char) s1[i] - (unsigned char) s2[i]);
+	if (c >= 'A' && c <= 'Z')
+		c += 'a' - 'A';
+	return (c);
 }

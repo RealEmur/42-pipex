@@ -1,41 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/25 23:28:28 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/27 23:34:09 by emyildir         ###   ########.fr       */
+/*   Created: 2023/12/04 13:52:58 by emyildir          #+#    #+#             */
+/*   Updated: 2023/12/08 21:17:10 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../pipex.h"
+#include "libft.h"
 
-char	*ft_strjoin(const char *s1, const char *s2)
+void	*ft_memset(void *b, int c, size_t len)
 {
-	size_t	s1_len;
-	size_t	s2_len;
-	size_t	i;
-	char	*str;
+	unsigned char	*s;
 
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	str = malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (!str)
-		return (0);
-	i = 0;
-	while (i < s1_len)
+	s = (unsigned char *) b;
+	while (len > 0)
 	{
-		str[i] = s1[i];
-		i++;
+		s[len - 1] = c;
+		len--;
 	}
-	i = 0;
-	while (i < s2_len)
-	{
-		str[i + s1_len] = s2[i];
-		i++;
-	}
-	str[i + s1_len] = '\0';
-	return (str);
+	return (b);
 }

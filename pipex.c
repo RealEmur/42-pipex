@@ -6,11 +6,17 @@
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 23:30:27 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/30 09:41:37 by emyildir         ###   ########.fr       */
+/*   Updated: 2024/05/04 13:04:01 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	send_error(char *str)
+{
+	ft_putstr_fd(str, STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
 
 char	*get_path(char *command, char **env)
 {
@@ -27,7 +33,7 @@ char	*get_path(char *command, char **env)
 	while (paths[i])
 	{
 		path = ft_strjoin(paths[i++], "/");
-		swap_str_and_free(&path, ft_strjoin(path, command));
+		path = ft_strappend(path, command);
 		if (!access(path, F_OK))
 			break ;
 		free(path);
@@ -40,101 +46,62 @@ char	*get_path(char *command, char **env)
 	return (path);
 }
 
-void	free_matrix(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-}
-
-void	first_process(char *command, char **env, int *p, int fd)
+void	exec_command(char *command, char **env)
 {
 	char	**command_splitted;
 	char	*path;
-	pid_t	pid;
+	size_t	i;
 
 	command_splitted = ft_split(command, ' ');
 	if (!command_splitted[0])
-	{
-		ft_putstr("Command is not valid.\n");
-		return ;
-	}
+		send_error(ERROR_EMPTY_COMMAND);
 	path = get_path(command_splitted[0], env);
-	if (!path)
-		path = ft_strjoin("", command);
-	pid = fork();
-	if (pid == 0)
+	if (execve(path, command_splitted, env) == -1)
 	{
-		close(p[0]);
-		dup2(fd, STDIN_FILENO);
-		dup2(p[1], STDOUT_FILENO);
-		if (execve(path, command_splitted, env) == -1)
-			exit(1);
+		i = 0;
+		while (command_splitted[i])
+		{
+			free(command_splitted[i]);
+			i++;
+		}
+		free(command_splitted);
+		free(path);
+		send_error(ERROR_COMMAND_NOT_FOUND);
 	}
-	waitpid(pid, 0, 0);
-	free_matrix(command_splitted);
-	free(path);
 }
 
-int	second_process(char *command, char **env, int *p, int fd)
+int	dup_io(int input_fd, int output_fd, int close_fd)
 {
-	char	**command_splitted;
-	char	*path;
-	int		status;
-	pid_t	pid;
-
-	command_splitted = ft_split(command, ' ');
-	if (!command_splitted[0])
-	{
-		ft_putstr("Command is not valid.\n");
-		return EXIT_FAILURE;
-	}
-	path = get_path(command_splitted[0], env);
-	if (!path)
-		path = ft_strjoin("", command);
-	pid = fork();
-	if (pid == 0)
-	{
-		close(p[1]);
-		dup2(fd, STDOUT_FILENO);
-		dup2(p[0], STDIN_FILENO);
-		if (execve(path, command_splitted, env) == -1)
-			exit(EXIT_FAILURE);
-	}
-	waitpid(pid, &status, 0);
-	free_matrix(command_splitted);
-	free(path);
-	return (status);
+	close(close_fd);
+	dup2(input_fd, STDIN_FILENO);
+	dup2(output_fd, STDOUT_FILENO);
+	return (1);
 }
 
 int	main(int size, char **args, char **env)
 {
-	int	input_file;
-	int	output_file;
-	int	p[2];
+	int		input_file;
+	int		output_file;
+	int		p[2];
+	pid_t	pid;
 
 	if (size != 5)
-		send_error(\
-		"Usage: ./pipex <input file> <command1> <command2> <output file>\n");
+		send_error(ERROR_INVALID_ARGS);
 	if (pipe(p) < 0)
-		send_error("An error occured\n");
+		send_error(ERROR_PIPE);
 	input_file = open(args[1], O_RDONLY);
 	if (input_file == -1)
-		send_error("Could't open input file.");
+		send_error(ERROR_INPUT_FILE);
 	output_file = open(args[4], O_WRONLY);
 	if (output_file == -1)
-		send_error("Couldn't open output file.");
-	first_process(args[2], env, p, input_file);
-	second_process(args[3], env, p, output_file);
-	close(input_file);
-	close(output_file);
-	close(p[0]);
-	close(p[1]);
+		send_error(ERROR_OUTPUT_FILE);
+	pid = fork();
+	if (pid == -1)
+		send_error(ERROR_FORK);
+	if (pid == 0 && dup_io(input_file, p[1], p[0]))
+		exec_command(args[2], env);
+	waitpid(pid, 0, 0);
+	dup_io(p[0], output_file, p[1]);
+	exec_command(args[3], env);
 	return (EXIT_SUCCESS);
 }

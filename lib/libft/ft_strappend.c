@@ -1,19 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   swap_str_and_free.c                                :+:      :+:    :+:   */
+/*   ft_strappend.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/28 08:41:16 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/28 08:43:32 by emyildir         ###   ########.fr       */
+/*   Created: 2024/05/04 12:32:30 by emyildir          #+#    #+#             */
+/*   Updated: 2024/05/04 12:52:12 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../pipex.h"
+#include "libft.h"
 
-void	swap_str_and_free(char **str, char *new_str)
+char	*ft_strappend(char const *s1, char const *s2)
 {
-	free(*str);
-	*str = new_str;
+	char	*str;
+
+	str = ft_strjoin(s1, s2);
+	free((void *) s1);
+	return (str);
 }

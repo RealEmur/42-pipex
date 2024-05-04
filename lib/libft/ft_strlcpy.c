@@ -1,19 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   send_error.c                                       :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: emyildir <emyildir@student.42istanbul.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/26 02:24:00 by emyildir          #+#    #+#             */
-/*   Updated: 2024/04/28 01:52:52 by emyildir         ###   ########.fr       */
+/*   Created: 2023/12/04 19:27:14 by emyildir          #+#    #+#             */
+/*   Updated: 2023/12/08 20:44:26 by emyildir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../pipex.h"
+#include "libft.h"
 
-void	send_error(char *str)
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
-	ft_putstr(str);
-	exit(EXIT_FAILURE);
+	char	*chr_src;
+	size_t	i;
+
+	chr_src = (char *) src;
+	i = 0;
+	while (src[i] && i + 1 < dstsize)
+	{
+		dst[i] = chr_src[i];
+		i++;
+	}
+	if (dstsize != 0)
+		dst[i] = '\0';
+	return (ft_strlen(src));
 }

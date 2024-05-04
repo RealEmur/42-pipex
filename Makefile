@@ -1,17 +1,35 @@
 NAME = pipex
-FILES = pipex.c ./functions/ft_split.c ./functions/ft_strlen.c functions/ft_strjoin.c functions/ft_strncmp.c ./functions/ft_putstr.c ./utils/send_error.c ./utils/swap_str_and_free.c
+FILES = pipex.c 
+OBJS = $(FILES:.c=.o)
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 
+LIBFT_DIR = lib/libft/
+LIBFT_NAME = libft.a
+
+PRINTF_DIR = lib/libftprintf/
+PRINTF_NAME = libftprintf.a
+
+
 all: $(NAME)
 
-$(NAME):
-	$(CC) $(CFLAGS) $(FILES) -o $(NAME)
+$(NAME): libft printf $(OBJS)
+	gcc $(OBJS) $(PRINTF_DIR)$(PRINTF_NAME) $(LIBFT_DIR)$(LIBFT_NAME) -o $(NAME)
+
+libft:
+	make -C $(LIBFT_DIR)
+
+printf: 
+	make -C $(PRINTF_DIR)
 
 clean:
-	echo "Maksat boş kalmasın"
+	make clean -C $(PRINTF_DIR)
+	make clean -C $(LIBFT_DIR)
+	$(RM) $(OBJS)
 
 fclean: clean 
+	make fclean	-C $(PRINTF_DIR)
+	make fclean -C $(LIBFT_DIR)
 	$(RM) $(NAME)
 
 re: fclean all 
